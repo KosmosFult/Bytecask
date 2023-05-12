@@ -1,0 +1,3 @@
+project(Bytecask)
+
+add_subdirectory(src/core)

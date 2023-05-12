@@ -4,6 +4,7 @@
 #include <map>
 #include <unistd.h>
 
+const string dbpath = "./db/";
 int act_file_id;
 int act_file_fd;
 int act_file_offset;
@@ -37,7 +38,7 @@ int persistRecord(time_t tstamp, string &key, string &value)
     {
         act_file_id++;
         close(act_file_fd);
-        string fname = "dbfile_"+to_string(act_file_id)+".dbf";
+        string fname = dbpath + "dbfile_"+to_string(act_file_id)+".dbf";
         if((act_file_fd = open(fname.c_str(), O_APPEND | O_CREAT))<0)
             return -2;
         act_file_offset = 0;
@@ -73,7 +74,7 @@ int set(string &key, string &value)
     };
 
     hashSet(htable, key, v);
-
+    persistRecord(ctime, key, value);
     
     return 0;
 }

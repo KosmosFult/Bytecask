@@ -19,3 +19,7 @@ int hashGet(dbhash &ht, string &key, hashvalue &rvalue)
 }
 
 
+string calCRC(string &body)
+{
+    return "0";
+}
