@@ -147,11 +147,17 @@ int dbinit(const char* path)
     return 0;
 }
 
+
+int dbclose()
+{
+    return 0;
+}
+
 int set(string &key, string &value)
 {
     time_t ctime = time(NULL);
-    int record_size = (CRC_WIDTH/8) + sizeof(time_t) + 2*sizeof(int) + 
-                        key.length() + value.length();
+    int record_size = (CRC_WIDTH/8) + TIMESTAMP_STR_LEN + V_KSIZE_LEN +
+                        V_VSIZE_LEN +  key.length() + value.length();
     hashvalue v = {
         act_file_id,
         record_size,
@@ -188,6 +194,7 @@ string get(string &key)
     }
     
     lseek(fd, vitr->second.offset, SEEK_SET);
+    printf("%d\n", vitr->second.record_size);
     if(read(fd, buf, vitr->second.record_size)<=0)
     {
         panic("get error--record not found");
@@ -195,6 +202,7 @@ string get(string &key)
     }
     
     rs = string(buf);
+    
     recordentry rc = strToRecord(rs);
     return rc.value;
 }

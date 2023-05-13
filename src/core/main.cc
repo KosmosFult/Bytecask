@@ -24,7 +24,11 @@ int main(int argc, char *argv[])
             cout<<"key:";
             cin>>key;
             value = get(key);
-            cout<<"getval:"<<value;
+            cout<<"getval:"<<value<<endl;
+        }
+        else if(cmd == "quit")
+        {
+            dbclose();
         }
         cout<<"-------\n";
     }
