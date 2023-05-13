@@ -1,4 +1,5 @@
 #include "util.h"
+#include <iostream>
 
 int hashSet(dbhash &ht, string &key, hashvalue &value)
 {
@@ -19,7 +20,28 @@ int hashGet(dbhash &ht, string &key, hashvalue &rvalue)
 }
 
 
-string calCRC(string &body)
+crc_t calCRC(string &body)
+{
+    return 0;
+}
+
+string crcToStr(crc_t crc)
 {
     return "0";
+}
+
+crc_t strToCRC(string crcstr)
+{
+    return 0;
+}
+
+int validCRC(string &body)
+{
+    return 0;
+}
+
+int panic(string info)
+{
+    cout<<"panic: "<<info<<endl;
+    return 0;
 }

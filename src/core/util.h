@@ -1,22 +1,15 @@
 #ifndef UTIL_H
 #define UTIL_H
-#include <unordered_map>
-#include <time.h>
-#include <string>
-using namespace std;
 
-typedef struct hashvalue
-{
-    int file_id;
-    int record_size;
-    int offset;
-    time_t tstamp;     
-}hashvalue;
+#include "type.h"
 
-typedef std::unordered_map<string, hashvalue> dbhash; 
+typedef std::unordered_map<string, hashvalue> dbhash;
 
 int hashSet(dbhash &ht, string &key, hashvalue &value);
 int hashGet(dbhash &ht, string &key, string &rvalue);
-string calCRC(string &body);
-
+crc_t calCRC(string &body);
+string crcToStr(crc_t crc);
+crc_t strToCRC(string crcstr);
+int validCRC(string &body);
+int panic(string info);
 #endif
