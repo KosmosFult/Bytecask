@@ -194,7 +194,6 @@ string get(string &key)
     }
     
     lseek(fd, vitr->second.offset, SEEK_SET);
-    printf("%d\n", vitr->second.record_size);
     if(read(fd, buf, vitr->second.record_size)<=0)
     {
         panic("get error--record not found");

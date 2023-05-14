@@ -29,6 +29,7 @@ int main(int argc, char *argv[])
         else if(cmd == "quit")
         {
             dbclose();
+            return 0;
         }
         cout<<"-------\n";
     }

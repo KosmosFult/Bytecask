@@ -12,4 +12,5 @@ string crcToStr(crc_t crc);
 crc_t strToCRC(string crcstr);
 int validCRC(string &body);
 int panic(string info);
+
 #endif
