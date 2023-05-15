@@ -17,32 +17,6 @@ map<int, openinfo> openfds;
 
 /*--------------------------------------*/
 
-int directoryExists(const char *path)
-{
-    DIR *directory = opendir(path);
-    if (directory != NULL)
-    {
-        closedir(directory);
-        return 0;
-    }
-    return -1;
-}
-
-string fid2fname(int fid)
-{
-    return dbpath + "dbfile_" + to_string(fid) + ".dbf";
-}
-
-string padWithZero(int num, int width)
-{
-    std::string str = std::to_string(num);
-    if (str.length() < width)
-    {
-        str = std::string(width - str.length(), '0') + str;
-    }
-    return str;
-}
-
 int persistRecord(time_t tstamp, string &key, string &value, valuetype vtype)
 {
     int rfd;
@@ -73,12 +47,9 @@ int persistRecord(time_t tstamp, string &key, string &value, valuetype vtype)
         act_file_id++;
         close(act_file_fd);
         string fname = fid2fname(act_file_id);
-        if ((act_file_fd = open(fname.c_str(), O_APPEND | O_CREAT, 0644)) < 0)
+        if ((act_file_fd = open(fname.c_str(), O_APPEND | O_CREAT | O_WRONLY, 0644)) < 0)
             return -2;
         act_file_offset = 0;
-        if ((rfd = open(fname.c_str(), O_RDONLY)) < 0)
-            return -3;
-        openfds.insert(make_pair(act_file_id, openinfo{rfd, time(NULL)}));
     }
 
     return 0;
@@ -193,25 +164,26 @@ string get(string &key)
     int fd;
     char buf[VALUE_MAX_LEN];
     string rs;
-    auto vitr = htable.find(key);
-    if (vitr == htable.end())
+    hashvalue hv;
+
+    if(hashGet(htable, key, hv)<0)
         return "";
 
-    fd = accessFd(vitr->second.file_id);
+    fd = accessFd(hv.file_id);
     if (fd < 0)
     {
-        panic("get error--can not get file(fid = " + to_string(vitr->second.file_id));
+        panic("get error--can not get file(fid = " + to_string(hv.file_id));
         return "";
     }
 
-    lseek(fd, vitr->second.offset, SEEK_SET);
-    if (read(fd, buf, vitr->second.record_size) <= 0)
+    lseek(fd, hv.offset, SEEK_SET);
+    if (read(fd, buf, hv.record_size) <= 0)
     {
         panic("get error--record not found");
         return "";
     }
 
-    rs = string(buf, vitr->second.record_size);
+    rs = string(buf, hv.record_size);
 
     recordentry rc = strToRecord(rs);
     return rc.value;

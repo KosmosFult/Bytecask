@@ -1,6 +1,8 @@
 #include "bytecask.h"
 #include <iostream>
 
+extern int basicTest1();
+extern int printOpenfds();
 
 int main(int argc, char *argv[])
 {
@@ -9,6 +11,8 @@ int main(int argc, char *argv[])
     string cmd;
     string key;
     string value;
+    basicTest1();
+
     while(1){
         cin>>cmd;
         if(cmd == "set")
@@ -25,6 +29,7 @@ int main(int argc, char *argv[])
             cin>>key;
             value = get(key);
             cout<<"getval:"<<value<<endl;
+            printOpenfds();
         }
         else if(cmd == "quit")
         {

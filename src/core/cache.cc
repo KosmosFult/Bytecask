@@ -6,6 +6,11 @@ extern map<int, openinfo> openfds;
 extern string fid2fname(int fid);
 
 
+
+/**
+ * it only perform well when read intensively for writing is 
+ * designed to "append" mode.
+*/
 int fdsLRU(int fid, int fd)
 {
     auto minitr = openfds.begin();
@@ -14,6 +19,7 @@ int fdsLRU(int fid, int fd)
         if(itr->second.tstamp < minitr->second.tstamp)
             minitr = itr;
     }
+    close(minitr->second.fd);
     openfds.erase(minitr);
     openfds.insert(make_pair(fid, openinfo{fd, time(NULL)}));
     return 0;
@@ -24,7 +30,7 @@ int fdsLRU(int fid, int fd)
 
 int accessFd(int fid)
 {
-    int fd;
+    int fd = -1;
     auto itr = openfds.find(fid);
     if(itr != openfds.end())
     {
@@ -34,7 +40,7 @@ int accessFd(int fid)
     }
     else
     {
-        // 否则
+        // 否则则打开文件，且如果打开文件超过一定数量则LRU替换
         if((fd = open(fid2fname(fid).c_str(), O_RDONLY))<0)
             return -1;
         if(openfds.size()>=MAX_OPENFDS)
@@ -42,5 +48,5 @@ int accessFd(int fid)
         else
             openfds.insert(make_pair(fid, openinfo{fd, time(NULL)}));
     }
-    return 0;
+    return fd;
 }

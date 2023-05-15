@@ -1,6 +1,11 @@
 #ifndef TYPE_H
 #define TYPE_H
 
+/**
+ * Types of the database system
+*/
+
+
 #include <unistd.h>
 #include <fcntl.h>
 #include <string>
@@ -10,6 +15,7 @@
 
 #define CRC_WIDTH 8
 #define CRC_POLY 0x07
+
 #define TIMESTAMP_STR_LEN 10
 #define VALUETYPE_SIZE sizeof(valuetype)
 #define EXPIRED_SIZE sizeof(recordentry::expired)

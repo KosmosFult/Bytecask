@@ -3,3 +3,4 @@ build
 dbfile
 bashcmd.sh
 db
+log
