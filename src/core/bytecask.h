@@ -7,7 +7,7 @@
 
 
 int dbinit(const char* dbpath);
-int set(string &key, string &value);
+int set(string &key, string &value, valuetype type = STRING);
 string get(string &key);
 int erase(string &key);
 int dbclose();
