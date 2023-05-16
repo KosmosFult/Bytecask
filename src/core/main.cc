@@ -1,6 +1,6 @@
 #include "bytecask.h"
 #include <iostream>
-
+#include <cstring>
 extern int basicTest1();
 extern int printOpenfds();
 
@@ -11,7 +11,9 @@ int main(int argc, char *argv[])
     string cmd;
     string key;
     string value;
-    basicTest1();
+
+    // if(!strcmp(argv[2], "test"))
+    //     basicTest1();
 
     while(1){
         cin>>cmd;

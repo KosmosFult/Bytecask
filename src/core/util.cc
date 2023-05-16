@@ -6,7 +6,8 @@
 
 int hashSet(dbhash &ht, string &key, hashvalue &value)
 {
-    ht.insert(make_pair(key, value));
+    // ht.insert(make_pair(key, value));
+    ht[key] = value;
     return 0;
 }
 

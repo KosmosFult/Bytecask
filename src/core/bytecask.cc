@@ -92,7 +92,7 @@ int dbReadMata()
     if (!files.empty())
     {
         act_file_id = fname2fid(files.back());
-        act_file_offset = getFileSize(files.back()) + 1;
+        act_file_offset = getFileSize(files.back());
     }
     return 0;
 }

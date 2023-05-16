@@ -42,6 +42,7 @@ int walk(int fd, off_t &offset, recordentry &entry)
     return 0;
 }
 
+// 注意没有判断新旧记录（理论上按时间排序不需要），没有判断expired
 int buildMemIndexByFiles(vector<string> &files, dbhash &index, int clear)
 {
     int fd;
@@ -59,6 +60,11 @@ int buildMemIndexByFiles(vector<string> &files, dbhash &index, int clear)
         fid = fname2fid(fname);
         while(walk(fd, offset, rc)>=0)
         {
+            if(rc.expired)
+            {
+                hashDel(index, rc.key);
+                continue;
+            }
             hv.file_id = fid;
             hv.record_size = ENTRY_HEADER_SIZE + rc.k_size + rc.v_size;
             hv.offset = offset - hv.record_size;
