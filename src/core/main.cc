@@ -31,6 +31,12 @@ int main(int argc, char *argv[])
             cout<<"getval:"<<value<<endl;
             printOpenfds();
         }
+        else if(cmd == "del")
+        {
+            cout<<"key:";
+            cin>>key;
+            expire(key);
+        }
         else if(cmd == "quit")
         {
             dbclose();

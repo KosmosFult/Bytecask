@@ -9,8 +9,14 @@
 int dbinit(const char* dbpath);
 int set(string &key, string &value, valuetype type = STRING);
 string get(string &key);
-int erase(string &key);
-int dbclose();
 
+/**
+ * expire the key-value.
+ *   return 0 when succeed.
+ *   return -1 when faild for IO of MemIndex.
+ *   return -2 when key not found.
+*/
+int expire(string &key);
+int dbclose();
 
 #endif

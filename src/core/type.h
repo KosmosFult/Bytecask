@@ -11,19 +11,20 @@
 #include <string>
 #include <unordered_map>
 #include <map>
-
+#include <vector>
 
 #define CRC_WIDTH 8
 #define CRC_POLY 0x07
 
-#define TIMESTAMP_STR_LEN 10
+// #define TIMESTAMP_STR_LEN 10
+#define TIMESTAMP_SIZE sizeof(time_t)
 #define VALUETYPE_SIZE sizeof(valuetype)
 #define EXPIRED_SIZE sizeof(recordentry::expired)
 #define KEY_MAX_LEN 128
 #define VALUE_MAX_LEN 256
 #define V_KSIZE_LEN 3
 #define V_VSIZE_LEN 4
-#define ENTRY_HEADER_SIZE (CRC_WIDTH/8) + TIMESTAMP_STR_LEN + V_KSIZE_LEN + \
+#define ENTRY_HEADER_SIZE (CRC_WIDTH/8) + TIMESTAMP_SIZE + V_KSIZE_LEN + \
                             V_VSIZE_LEN + VALUETYPE_SIZE + EXPIRED_SIZE
 
 
@@ -46,9 +47,8 @@ typedef struct openinfo
 }openinfo;
 
 /**
- * When persisting, members of recordentry will be presented
- * as ascii char except valuetype and crc. There may be some
- * problems because of Big-endian/Little-endian
+ * When persisting, k_size, v_size of recordentr will be presented
+ * as ascii char. There may be some problems because of Big-endian/Little-endian.
 */
 typedef struct recordentry
 {
@@ -58,7 +58,7 @@ typedef struct recordentry
     int k_size;
     int v_size;
     valuetype type;    // for persisting, use byte not ascii(the type may be over '9')
-    uint8_t expired;   // 0 or 1(use ascii '0' or '1' for persisting)
+    uint8_t expired;   // 0 or 1
     // data
     string key;
     string value;
@@ -69,7 +69,7 @@ typedef struct hashvalue
 {
     int file_id;
     int record_size;
-    int offset;
+    off_t offset;
     time_t tstamp;     
 }hashvalue;
 

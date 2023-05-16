@@ -5,11 +5,12 @@
 #include <dirent.h>
 #include "cache.h"
 #include "util.h"
+#include "butler.h"
 
 string dbpath;
 int act_file_id;
 int act_file_fd;
-int act_file_offset;
+off_t act_file_offset;
 dbhash htable;
 
 // 用于记录已打开的读文件描述符
@@ -17,17 +18,12 @@ map<int, openinfo> openfds;
 
 /*--------------------------------------*/
 
-int persistRecord(time_t tstamp, string &key, string &value, valuetype vtype)
+int persistRecord(time_t tstamp, string &key, string &value, valuetype vtype, uint8_t expired = 0)
 {
     int rfd;
-    uint8_t expired = 0;
-    /**
-     * 由于string有长度成员，因此0x0不会作为字符串结束
-     */
     string type_byte(reinterpret_cast<char *>(&vtype), sizeof(vtype));
     string expired_byte(reinterpret_cast<char *>(&expired), 1);
-    // 目前unix时间戳正常情况为10位数
-    string body = padWithZero(tstamp, TIMESTAMP_STR_LEN) +
+    string body = timeToStr(tstamp) +
                   padWithZero(key.length(), V_KSIZE_LEN) +
                   padWithZero(value.length(), V_VSIZE_LEN) +
                   type_byte +
@@ -41,7 +37,10 @@ int persistRecord(time_t tstamp, string &key, string &value, valuetype vtype)
 
     act_file_offset += record.length();
 
-    // 如果文件大小超过阈值则新建活动文件
+    /**
+     * if active file size reach the trigger then creat a
+     * new file as current active file.
+     */
     if (act_file_offset >= FILE_SIZE_TRIG)
     {
         act_file_id++;
@@ -62,8 +61,8 @@ recordentry strToRecord(string &rs)
 
     rc.crc = strToCRC(rs.substr(pos, CRC_WIDTH / 8));
     pos += CRC_WIDTH / 8;
-    rc.tstamp = stol(rs.substr(pos, TIMESTAMP_STR_LEN)); // 在time_t为long时成立
-    pos += TIMESTAMP_STR_LEN;
+    rc.tstamp = strToTime(rs.substr(pos, TIMESTAMP_SIZE));
+    pos += TIMESTAMP_SIZE;
     rc.k_size = stoi(rs.substr(pos, V_KSIZE_LEN));
     pos += V_KSIZE_LEN;
     rc.v_size = stoi(rs.substr(pos, V_VSIZE_LEN));
@@ -84,22 +83,28 @@ recordentry strToRecord(string &rs)
 int dbReadMata()
 {
     /**
-     * TODO:
      * 读取数据库源信息，例如当前最大文件号，进而获得act_file_id
      */
     act_file_id = 0;
     act_file_offset = 0;
+
+    vector<string> files = getDBFiles(dbpath);
+    if (!files.empty())
+    {
+        act_file_id = fname2fid(files.back());
+        act_file_offset = getFileSize(files.back()) + 1;
+    }
     return 0;
 }
 
 int dbLoadMem()
 {
     /**
-     * TODO:
      * 恢复内存中的hash索引结果，可选方案
      *      1. 系统退出时持久化hash
      *      2. 扫描整个数据库文件，重构hash
      */
+    recoverMemIndex();
     return 0;
 }
 
@@ -147,14 +152,13 @@ int set(string &key, string &value, valuetype type)
         act_file_offset,
         ctime};
 
-    hashSet(htable, key, v);
-
     int state = 0;
     if ((state = persistRecord(ctime, key, value, type)) < 0)
     {
         panic("set error state_" + to_string(state) + "\n");
         return -1;
     }
+    hashSet(htable, key, v);
 
     return 0;
 }
@@ -166,7 +170,7 @@ string get(string &key)
     string rs;
     hashvalue hv;
 
-    if(hashGet(htable, key, hv)<0)
+    if (hashGet(htable, key, hv) < 0)
         return "";
 
     fd = accessFd(hv.file_id);
@@ -187,4 +191,30 @@ string get(string &key)
 
     recordentry rc = strToRecord(rs);
     return rc.value;
+}
+
+int expire(string &key)
+{
+    hashvalue hv;
+    time_t ctime = time(NULL);
+    string expired_value = "E";
+
+    /**
+     * There are two query for MemIndex and they can be integrated by
+     * "hashGetAndDel". But if IO fails later, the MemIndex needs to be
+     * recover.
+     */
+    if (hashGet(htable, key, hv) < 0)
+        return -1;
+
+    int state = 0;
+    if ((state = persistRecord(ctime, key, expired_value, STRING, 1)) < 0)
+    {
+        panic("expire error state_-2\n");
+        return -2;
+    }
+
+    if (hashDel(htable, key) < 0)
+        return -3;
+    return 0;
 }
