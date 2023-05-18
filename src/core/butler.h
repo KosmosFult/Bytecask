@@ -9,7 +9,7 @@
 
 #include "util.h"
 
-int buildMemIndexByFiles(vector<string> &files, dbhash &index, int clear = 0);
+int buildMemIndexFromFiles(vector<string> &files, dbhash &index, int clear = 0);
 
 int recoverMemIndex();
 

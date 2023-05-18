@@ -4,10 +4,14 @@
 extern string dbpath;
 extern dbhash htable;
 /**
- * read entry according to the offset. 
+ * Read entry according to the offset. 
  * Not using buffer for globel processing(e.g. 4K for one read). 
- * The performance depends on the OS read cache or using mmap to 
- * rewrite this function later.
+ * The performance depends on the OS read cache or using mmap to rewrite this function later.
+ * 
+ * This function read an entry according to fd and offset. Change happens on
+ * the reference varible 'entry' and the varible 'offset' updates automatically.
+ * The offset of fd needs to match the variable 'offset' which can save the
+ * cost of lseek(trap to kernel)
 */
 int walk(int fd, off_t &offset, recordentry &entry)
 {
@@ -42,8 +46,8 @@ int walk(int fd, off_t &offset, recordentry &entry)
     return 0;
 }
 
-// 注意没有判断新旧记录（理论上按时间排序不需要），没有判断expired
-int buildMemIndexByFiles(vector<string> &files, dbhash &index, int clear)
+// 注意没有判断新旧记录（理论上文件按创建时间排序不需要）
+int buildMemIndexFromFiles(vector<string> &files, dbhash &index, int clear)
 {
     int fd;
     off_t offset;
@@ -58,7 +62,7 @@ int buildMemIndexByFiles(vector<string> &files, dbhash &index, int clear)
             return -1;
         offset = 0;
         fid = fname2fid(fname);
-        while(walk(fd, offset, rc)>=0)
+        while(walk(fd, offset, rc) >= 0)
         {
             if(rc.expired)
             {
@@ -71,6 +75,7 @@ int buildMemIndexByFiles(vector<string> &files, dbhash &index, int clear)
             hv.tstamp = rc.tstamp;
             hashSet(index, rc.key, hv);
         }
+        close(fd);
     }
     return 0;
 }
@@ -79,6 +84,6 @@ int recoverMemIndex()
 {
     vector<string> files = getDBFiles(dbpath);
     if(!files.empty())
-        buildMemIndexByFiles(files, htable, 1);
+        buildMemIndexFromFiles(files, htable, 1);
     return 0;
 }
