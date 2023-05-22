@@ -1,6 +1,5 @@
 build
 .vscode
 dbfile
-bashcmd.sh
 db
 log

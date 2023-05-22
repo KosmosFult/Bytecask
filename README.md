@@ -1,7 +1,12 @@
 # Bytecask
 
 A simple kv store inspired by Bitcask.\
-It runs on linux/unix for the use of POSIX api. 
+It runs on linux/unix for the use of POSIX api.
+
+## Reqirement
++ gnu/g++ 
++ C++17
++ Cmake
 
 ## Build
 ```
@@ -31,3 +36,10 @@ You can also give a database path as the sencond argument and the program will u
 ```
 
 In the early stages of development, this project is currently performing some interface testing only in the `main`. If you want to use it in your own project, please refer to the API in `bytecask.h` and include it where necessary. Additional important features will be improved later, and TCP/IP connectivity support will be provided.
+
+## Todo:
++ memory key-value buffer/cache.
++ merge module to compact data files.
++ server/client database mode.
++ sepecifically optimized data structure for in-memory index.
++ ...
