@@ -6,7 +6,7 @@ extern int printOpenfds();
 
 int main(int argc, char *argv[])
 {
-    if(dbinit(argv[1])<0)
+    if(dbinit(argc, argv)<0)
         return -1;
     string cmd;
     string key;

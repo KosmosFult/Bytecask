@@ -3,9 +3,10 @@
 #include <netinet/in.h>
 #include <iostream>
 #include <cstring>
+#include "inicpp.h"
 
 
-int procedureCmd(const string &command, string &response)
+int cmdProcedure(const string &cmmand, string &response)
 {
     return 0;
 }

@@ -3,9 +3,11 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <dirent.h>
+#include <filesystem>
 #include "cache.h"
 #include "util.h"
 #include "butler.h"
+#include "inicpp.h"
 
 string dbpath;
 int act_file_id;
@@ -78,12 +80,20 @@ recordentry strToRecord(string &rs)
     return rc;
 }
 
+int createDefaultConfig(string path)
+{
+    ini::IniFile dbini;
+    dbini["path"]["dbpath"] = "UNKNOWN";
+    dbini.save(path);
+    return 0;
+}
+
 /*--------------------------------------*/
 
 int dbReadMata()
 {
     /**
-     * 读取数据库源信息，例如当前最大文件号，进而获得act_file_id
+     * 读取数据库元信息，例如当前最大文件号，进而获得act_file_id
      */
     act_file_id = 0;
     act_file_offset = 0;
@@ -97,31 +107,55 @@ int dbReadMata()
     return 0;
 }
 
+/**
+ * 恢复内存中的hash索引结果，可选方案
+ *      1. 系统退出时持久化hash
+ *      2. 扫描整个数据库文件，重构hash
+ */
 int dbLoadMem()
 {
-    /**
-     * 恢复内存中的hash索引结果，可选方案
-     *      1. 系统退出时持久化hash
-     *      2. 扫描整个数据库文件，重构hash
-     */
     recoverMemIndex();
     return 0;
 }
 
-int dbinit(const char *path)
+int dbinit(int argc, char *argv[])
 {
     int rfd;
+    ini::IniFile dbini;
+    const char *argpath = argc > 1 ? argv[1] : NULL;
+    filesystem::path exepath(argv[0]);
+    filesystem::path exedir = exepath.parent_path();
+    string config_path = exedir / CONFIG_FILE;
 
     printf("database initializing...\n");
-    dbpath = string(path);
 
-    if (directoryExists(path) < 0)
+    if (!filesystem::exists(config_path))
+        createDefaultConfig(config_path);
+
+    dbini.load(config_path);
+    dbpath = dbini["path"]["dbpath"].as<string>();
+
+    if (argpath)
     {
-        panic("dbinit--database path \"" + dbpath + "\" not exists\n");
+        if (filesystem::exists(argpath))
+        {
+            dbpath = string(argpath);
+            dbini["path"]["dbpath"] = dbpath;
+        }
+        else
+        {
+            panic("database path \"" + string(argpath) + "\" not exists.");
+            return -1;
+        }
+    }
+    else if (!filesystem::exists(dbpath))
+    {
+        panic("database path \"" + dbpath + "\" not exists.\nplease check your \"" +
+              config_path + "\".");
         return -1;
     }
-    else
-        dbpath = string(path);
+
+    dbini.save(config_path);
 
     dbReadMata();
     dbLoadMem();

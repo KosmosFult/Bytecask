@@ -90,6 +90,16 @@ int printOpenfds()
     return 0;
 }
 
+bool fileExists(const char *path)
+{
+    // char buf[128];
+    // getcwd(buf, sizeof(buf));
+
+    // printf("%s%s\n", buf, path);
+    
+    return !(access(path, F_OK));
+}
+
 int directoryExists(const char *path)
 {
     DIR *directory = opendir(path);
@@ -104,7 +114,7 @@ int directoryExists(const char *path)
 string fid2fname(int fid)
 {
     extern string dbpath;
-    return dbpath + "dbfile_" + to_string(fid) + ".dbf";
+    return dbpath + (dbpath.back() == '/'? "" : "/") + "dbfile_" + to_string(fid) + ".dbf";
 }
 
 int fname2fid(string fname)

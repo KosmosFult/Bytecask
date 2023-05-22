@@ -46,9 +46,14 @@ typedef struct openinfo
     time_t tstamp;  // recent used time(for LRU)
 }openinfo;
 
+
 /**
+ * This struct has std::string variables for laziness. So do not persist
+ * the entry directly or use memory binary operations. You need to
+ * implement specific functions to persist it (ref. bytecask.cc-> 'persistRecord' and 'strToRecord')
  * When persisting, k_size, v_size of recordentr will be presented
  * as ascii char. There may be some problems because of Big-endian/Little-endian.
+ * 
 */
 typedef struct recordentry
 {

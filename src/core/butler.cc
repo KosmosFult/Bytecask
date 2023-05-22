@@ -5,10 +5,10 @@ extern string dbpath;
 extern dbhash htable;
 /**
  * Read entry according to the offset. 
- * Not using buffer for globel processing(e.g. 4K for one read). 
+ * Not using buffer for globel process(e.g. 4K for one read). 
  * The performance depends on the OS read cache or using mmap to rewrite this function later.
  * 
- * This function read an entry according to fd and offset. Change happens on
+ * This function read an entry according to fd and offset. Result of the read happens on
  * the reference varible 'entry' and the varible 'offset' updates automatically.
  * The offset of fd needs to match the variable 'offset' which can save the
  * cost of lseek(trap to kernel)

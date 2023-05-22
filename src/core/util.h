@@ -31,7 +31,7 @@ int getIndexMemSize();
 int printBasicInfo();
 
 
-
+bool fileExists(const char *path);
 int directoryExists(const char *path);
 string fid2fname(int fid);
 int fname2fid(string fname);

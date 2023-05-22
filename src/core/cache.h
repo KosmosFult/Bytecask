@@ -12,6 +12,12 @@
 
 #define MAX_OPENFDS 8
 
+/**
+ * Get file descriptor by file id.
+ * If the target file has been open, it will search the fd from opened file descriptor list.
+ * Otherwise, it will open the file and return the new fd. Replacement will happen when the
+ * number of the opened files is greater than `MAX_OPENFDS`
+*/
 int accessFd(int fid); 
 
 
