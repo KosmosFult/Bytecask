@@ -30,4 +30,4 @@ You can also give a database path as the sencond argument and the program will u
 ./core <database path>
 ```
 
-In the early stages of development, this project is currently performing some interface testing only in the main function. If you want to use it in your own project, please refer to the API in `bytecask.h` and include it where necessary. Additional important features will be improved later, and TCP/IP connectivity support will be provided.
+In the early stages of development, this project is currently performing some interface testing only in the `main`. If you want to use it in your own project, please refer to the API in `bytecask.h` and include it where necessary. Additional important features will be improved later, and TCP/IP connectivity support will be provided.
