@@ -18,7 +18,7 @@ make
 ## Usage
 
 **dbconfig.ini**\
-You need to create a initial-file "dbconfig.ini" in the same directory as your executable file "core". So far, the content is as follows
+You need to create an initial-file "dbconfig.ini" in the same directory as your executable file "core". So far, the content is as follows
 ```
 [path]
 dbpath="your-database-path" 
