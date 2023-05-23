@@ -1,7 +1,7 @@
 # Bytecask
 
 A simple kv store inspired by Bitcask.\
-It runs on linux/unix for the use of POSIX api.
+It runs on linux/unix for the use of unistd.h.(You can also try some solutions to compile it on windows)
 
 ## Reqirement
 + gnu/g++ 
