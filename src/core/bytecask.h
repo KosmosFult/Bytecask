@@ -2,9 +2,7 @@
 #define BYTECASK_H
 
 #include "type.h"
-
-#define FILE_SIZE_TRIG 4096
-#define CONFIG_FILE "dbconfig.ini"
+#include "def.h"
 
 int dbinit(int argc, char *argv[]);
 int set(string &key, string &value, valuetype type = STRING);
@@ -17,6 +15,9 @@ string get(string &key);
  *   return -2 when key not found.
  */
 int expire(string &key);
+int listKeys();
+int dbsync();
+int merge();
 int dbclose();
 
 #endif

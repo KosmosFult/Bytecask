@@ -10,7 +10,13 @@
  *   
 */
 typedef std::unordered_map<string, hashvalue> dbhash;
+
 int hashSet(dbhash &ht, string &key, hashvalue &value);
+
+/**
+ * Get the index value by the key from memory index.
+ * return 0 if found else -1. 
+*/
 int hashGet(dbhash &ht, string &key, hashvalue &value);
 int hashDel(dbhash &ht, string &key);
 int hashClear(dbhash &ht);
@@ -30,7 +36,7 @@ int printOpenfds();
 int getIndexMemSize();
 int printBasicInfo();
 
-
+string toAbpath(string last_name);
 bool fileExists(const char *path);
 int directoryExists(const char *path);
 string fid2fname(int fid);
@@ -38,5 +44,8 @@ int fname2fid(string fname);
 string padWithZero(int num, int width);
 bool hasExtension(const string &fileName, const string &extension);
 vector<string> getDBFiles(const string &directory);
+vector<string> getCPFiles(const string &directory);
+vector<string> getFilesByExtension(const string &directory, const string &extension);
 off_t getFileSize(string fname);
+void printProgressBar(int progress, int total);
 #endif

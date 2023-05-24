@@ -1,7 +1,7 @@
 #include "bytecask.h"
 #include <iostream>
 #include <cstring>
-extern int basicTest1();
+#include "test.h"
 extern int printOpenfds();
 
 int main(int argc, char *argv[])
@@ -11,9 +11,6 @@ int main(int argc, char *argv[])
     string cmd;
     string key;
     string value;
-
-    // if(!strcmp(argv[2], "test"))
-    //     basicTest1();
 
     while(1){
         cin>>cmd;
@@ -43,6 +40,14 @@ int main(int argc, char *argv[])
         {
             dbclose();
             return 0;
+        }
+        else if(cmd == "merge")
+        {
+            merge();
+        }
+        else if(cmd == "cptest")
+        {
+            compactTest();
         }
         cout<<"-------\n";
     }

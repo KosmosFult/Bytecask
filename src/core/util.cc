@@ -111,6 +111,9 @@ int directoryExists(const char *path)
     return -1;
 }
 
+/**
+ * return the absolute path of file
+*/
 string fid2fname(int fid)
 {
     extern string dbpath;
@@ -144,7 +147,7 @@ bool hasExtension(const string &fileName, const string &extension)
     return (fileName.compare(fileName.length() - extension.length(), extension.length(), extension) == 0);
 }
 
-vector<string> getDBFiles(const string &directory)
+vector<string> getFilesByExtension(const string &directory, const string &extension)
 {
     vector<string> files;
 
@@ -159,7 +162,7 @@ vector<string> getDBFiles(const string &directory)
             string fileName = entry->d_name;
             string filePath = directory + (directory.back() == '/' ? "" : "/") + fileName;
 
-            if (hasExtension(fileName, ".dbf") && stat(filePath.c_str(), &fileStat) == 0)
+            if (hasExtension(fileName, extension) && stat(filePath.c_str(), &fileStat) == 0)
             {
                 if (S_ISREG(fileStat.st_mode))
                 {
@@ -180,6 +183,16 @@ vector<string> getDBFiles(const string &directory)
     return files;
 }
 
+vector<string> getDBFiles(const string &directory)
+{
+    return getFilesByExtension(directory, ".dbf");
+}
+
+vector<string> getCPFiles(const string &directory)
+{
+    return getFilesByExtension(directory, ".cpf");
+}
+
 off_t getFileSize(string fname)
 {
     struct stat fileStat;
@@ -187,4 +200,29 @@ off_t getFileSize(string fname)
         return fileStat.st_size;
     else
         return 0;
+}
+
+string toAbpath(string last_name)
+{
+    extern string dbpath;
+    return dbpath + last_name;
+}
+
+void printProgressBar(int progress, int total)
+{
+    int barWidth = 70;
+
+    float percent = static_cast<float>(progress) / total;
+
+    int filledWidth = static_cast<int>(barWidth * percent);
+
+    std::cout << "[";
+    for (int i = 0; i < barWidth; ++i) {
+        if (i < filledWidth)
+            std::cout << "=";
+        else
+            std::cout << " ";
+    }
+    std::cout << "] " << int(percent * 100.0) << "%\r";
+    std::cout.flush();
 }

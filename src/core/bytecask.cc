@@ -155,8 +155,9 @@ int dbinit(int argc, char *argv[])
         return -1;
     }
 
+    if(dbpath.back() != '/')
+        dbpath.append("/");
     dbini.save(config_path);
-
     dbReadMata();
     dbLoadMem();
     if ((act_file_fd = open(fid2fname(act_file_id).c_str(), O_WRONLY | O_CREAT | O_APPEND, 0644)) < 0)
@@ -250,5 +251,17 @@ int expire(string &key)
 
     if (hashDel(htable, key) < 0)
         return -3;
+    return 0;
+}
+
+int merge()
+{
+    printf("merge start\n");
+    if(mergeDBfiles() < 0)
+        return -1;
+    printf("merge completed\n");
+    dbReadMata();
+    dbLoadMem();
+    openfds.clear();
     return 0;
 }
