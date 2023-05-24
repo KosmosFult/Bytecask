@@ -40,12 +40,17 @@ string toAbpath(string last_name);
 bool fileExists(const char *path);
 int directoryExists(const char *path);
 string fid2fname(int fid);
+
+/**
+ * Can be used for the format as "xxx_`id`.yyy"
+*/
 int fname2fid(string fname);
 string padWithZero(int num, int width);
 bool hasExtension(const string &fileName, const string &extension);
 vector<string> getDBFiles(const string &directory);
 vector<string> getCPFiles(const string &directory);
 vector<string> getFilesByExtension(const string &directory, const string &extension);
+void sortFilesById(vector<string> &files);
 off_t getFileSize(string fname);
 void printProgressBar(int progress, int total);
 #endif

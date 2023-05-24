@@ -226,3 +226,11 @@ void printProgressBar(int progress, int total)
     std::cout << "] " << int(percent * 100.0) << "%\r";
     std::cout.flush();
 }
+
+void sortFilesById(vector<string> &files)
+{
+    sort(files.begin(), files.end(), [](const string &f1, const string &f2){
+        return fname2fid(f1) < fname2fid(f2);
+    });
+    return;
+}

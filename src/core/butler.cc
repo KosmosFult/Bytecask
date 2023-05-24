@@ -212,6 +212,7 @@ int mergeDBfiles()
     }
  
     vector<string> dbfiles = getDBFiles(dbpath);
+    sortFilesById(dbfiles);
 
     // if faild, reopen files
     if(_static_compact(dbfiles)!=0)
@@ -232,6 +233,7 @@ int mergeDBfiles()
         remove(fname.data());
     
     vector<string> cpfiles = getCPFiles(dbpath);
+    sortFilesById(cpfiles);
     // Rename these files from id 0
     int id = 0;
     string new_name;

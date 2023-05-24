@@ -99,6 +99,7 @@ int dbReadMata()
     act_file_offset = 0;
 
     vector<string> files = getDBFiles(dbpath);
+    sortFilesById(files);
     if (!files.empty())
     {
         act_file_id = fname2fid(files.back());
