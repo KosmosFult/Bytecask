@@ -17,6 +17,7 @@ string get(string &key);
 int expire(string &key);
 int listKeys();
 int dbsync();
+dbinfo getDBinfo();
 int merge();
 int dbclose();
 

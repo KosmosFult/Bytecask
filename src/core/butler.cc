@@ -117,6 +117,7 @@ int buildMemIndexFromFiles(vector<string> &files, dbhash &index, int clear)
 int recoverMemIndex()
 {
     vector<string> files = getDBFiles(dbpath);
+    sortFilesById(files);
     if(!files.empty())
         buildMemIndexFromFiles(files, htable, 1);
     return 0;
@@ -126,6 +127,8 @@ int recoverMemIndex()
 /**
  * Stop the key-value store and compact the old files.
  * It will not change the memory index in this version(hint file will be implement later).
+ * There is a big problem that the unix timestamp may not be fine-grained to check the record's
+ * validity.
 */
 int _static_compact(vector<string> &files)
 {
@@ -187,6 +190,8 @@ int _static_compact(vector<string> &files)
 
         printProgressBar(++progress, total);
     }
+
+    printf("\n");
 
     // if error, delete all compact transient files
     if(state < 0)

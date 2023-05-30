@@ -216,14 +216,14 @@ void printProgressBar(int progress, int total)
 
     int filledWidth = static_cast<int>(barWidth * percent);
 
-    std::cout << "[";
+    std::cout << "\r" << "[";
     for (int i = 0; i < barWidth; ++i) {
         if (i < filledWidth)
             std::cout << "=";
         else
             std::cout << " ";
     }
-    std::cout << "] " << int(percent * 100.0) << "%\r";
+    std::cout << "] " << int(percent * 100.0) << "%";
     std::cout.flush();
 }
 

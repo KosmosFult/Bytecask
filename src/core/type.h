@@ -78,4 +78,12 @@ typedef struct hashvalue
     time_t tstamp;     
 }hashvalue;
 
+typedef struct dbinfo
+{
+    int n_dbfiles;
+    int n_cpfiles;
+    size_t size;       // size of data files
+    size_t mem_size;   // size of memory index
+}dbinfo;
+
 #endif

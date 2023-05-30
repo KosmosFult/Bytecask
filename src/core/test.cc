@@ -3,6 +3,7 @@
 #include <fstream>
 #include <random>
 #include "test.h"
+#include "util.h"
 
 const string test_dir = "/home/kosmos/workspace/Bytecask/test/";
 
@@ -52,42 +53,29 @@ TraceLine::TraceLine(string line) : val("")
     
 }
 
-
-int basicTest1()
+KVLine::KVLine(string line)
 {
-    int keylen, vallen;
-    std::string key, val;
-    std::ofstream file("/home/kosmos/workspace/Bytecask/log/genlog.txt");
-    std::cout << "basicTest1 executing..." << std::endl;
-    if (!file.is_open())
-    {
-        std::cerr << "Failed to open file." << std::endl;
-        return -1;
-    }
-
-    for (int i = 0; i < 1000; i++)
-    {
-        keylen = generateRandomInteger(4, 32);
-        vallen = generateRandomInteger(8, 32);
-        key = generateRandomString(keylen);
-        val = generateRandomString(vallen);
-        set(key, val);
-        file << key << "," << val << std::endl;
-    }
-
-    file.close();
-    std::cout << "basicTest1 end" << std::endl;
-    return 0;
+    size_t dot;
+    dot = line.find(',');
+    key = line.substr(0, dot);
+    val = line.substr(dot+1);
 }
+
 
 int compactTest()
 {
     string cmd = "python3 " + test_dir + "compact_test.py";
     system(cmd.data());
-    ifstream trace(test_dir + "trace/trace_compact.txt");
-    ofstream dbans(test_dir + "trace/trace_compact_dbans.txt");
+    string trace_fpath = test_dir + "trace/trace_compact.txt";
+    string kvs_fpath = test_dir + "trace/trace_compact_kvs.txt";
+    string dbans_fpath = test_dir + "trace/trace_compact_dbans.txt";
+    string kvans_fpath = test_dir + "trace/trace_compacted_dbkvs.txt";
+    ifstream trace(trace_fpath);
+    ifstream kvs(kvs_fpath);
+    ofstream dbans(dbans_fpath);
+    ofstream kvans(kvans_fpath);
 
-    if (trace.is_open() && dbans.is_open())
+    if (trace.is_open() && dbans.is_open() && kvs.is_open() && kvans.is_open())
     {
         string line;
         while (getline(trace, line))
@@ -101,13 +89,35 @@ int compactTest()
                 expire(tl.key);
         }
 
+        std::cout << "trace completed." << std::endl; 
+
+        if(merge() < 0)
+        {
+            std::cout << "compact test failed in merge" << std::endl;
+            return -1;
+        }
+
+        while(getline(kvs, line))
+        {
+            KVLine tkv(line);
+            kvans << tkv.key << "," << get(tkv.key) << endl;
+        }
+
+        kvs.close();
+        kvans.close();
         trace.close();
         dbans.close();
     }
     else
     {
         std::cerr << "Failed to open the file." << std::endl;
+        return -1;
     }
 
+    string traceasn_fpath = test_dir + "trace/trace_compact_ans.txt";
+    std::cout << "\ncomparing traces..." << std::endl;
+    system(("cmp " + traceasn_fpath + " " + dbans_fpath).data());
+    std::cout << "\ncomparing compacted key-value..." << std::endl;
+    system(("cmp " + kvs_fpath + " " + kvans_fpath).data());
     return 0;
 }
