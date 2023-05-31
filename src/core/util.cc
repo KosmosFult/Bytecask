@@ -4,6 +4,7 @@
 #include <sys/stat.h>
 #include <algorithm>
 
+
 int hashSet(dbhash &ht, string &key, hashvalue &value)
 {
     // ht.insert(make_pair(key, value));
@@ -39,6 +40,11 @@ int hashClear(dbhash &ht)
 {
     ht.clear();
     return 0;
+}
+
+int hashSize(dbhash &ht)
+{
+    return ht.size();
 }
 
 crc_t calCRC(string &body)
@@ -233,4 +239,12 @@ void sortFilesById(vector<string> &files)
         return fname2fid(f1) < fname2fid(f2);
     });
     return;
+}
+
+size_t getIndexMemSize(dbhash &ht)
+{
+    size_t mem_size = 0;
+    for(auto &i : ht)
+        mem_size += i.first.length() + sizeof(i.second);
+    return mem_size;
 }

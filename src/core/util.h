@@ -5,8 +5,9 @@
 
 /**
  * The memory index structure is named as dbhash.
- * It can also be replaced by other data structure (rb-tree, LSM) and
- * then need to implement the "hashSet" and "hashGet" functions.
+ * It can also be replaced by other data structure (rb-tree) and
+ * then you need to implement the "hashSet" and "hashGet" functions.
+ * All operations on the index must go through the functions in `util.h`.
  *   
 */
 typedef std::unordered_map<string, hashvalue> dbhash;
@@ -21,6 +22,11 @@ int hashGet(dbhash &ht, string &key, hashvalue &value);
 int hashDel(dbhash &ht, string &key);
 int hashClear(dbhash &ht);
 
+/**
+ * Get the number of key-value pairs
+*/
+int hashSize(dbhash &ht);
+
 crc_t calCRC(string &body);
 string crcToStr(crc_t crc);
 crc_t strToCRC(string crcstr);
@@ -33,7 +39,18 @@ string timeToStr(time_t timestamp);
 */
 int panic(string info);
 int printOpenfds();
-int getIndexMemSize();
+
+/**
+ * Get the memory use for index. It just simply calculate the key-value
+ * size of memory index and ignore the memory use for index data structure.
+*/
+size_t getIndexMemSize(dbhash &ht);
+
+/**
+ * Get the almost really size of the memory index, include the
+ * addtionally memory use for index data structure.  
+*/
+size_t getIndexRsize(dbhash &t);
 int printBasicInfo();
 
 string toAbpath(string last_name);

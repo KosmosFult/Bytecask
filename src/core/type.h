@@ -84,6 +84,7 @@ typedef struct dbinfo
     int n_cpfiles;
     size_t size;       // size of data files
     size_t mem_size;   // size of memory index
+    size_t n_kvs;
 }dbinfo;
 
 #endif

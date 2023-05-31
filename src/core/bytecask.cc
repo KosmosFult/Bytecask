@@ -8,6 +8,8 @@
 #include "util.h"
 #include "butler.h"
 #include "inicpp.h"
+#include <numeric>
+
 
 string dbpath;
 int act_file_id;
@@ -170,6 +172,9 @@ int dbinit(int argc, char *argv[])
     rfd = open(fid2fname(act_file_id).c_str(), O_RDONLY);
     openfds.insert(make_pair(act_file_id, openinfo{rfd, time(NULL)}));
     printf("database initializing completed\n");
+
+    printf("memory use for index: %ld bytes\ntotal key-value pairs: %d\n\n",
+            getIndexMemSize(htable), hashSize(htable));
     return 0;
 }
 
@@ -265,4 +270,20 @@ int merge()
     dbLoadMem();
     openfds.clear();
     return 0;
+}
+
+dbinfo getDBinfo()
+{
+    dbinfo i;
+    vector<string> dbfiles = getDBFiles(dbpath);
+    vector<size_t> dbfsize;
+    vector<string> cpfiles = getCPFiles(dbpath);
+    transform(dbfiles.begin(), dbfiles.end(), back_inserter(dbfsize),
+            [](string fname){
+                return getFileSize(fname);
+            });
+    i.n_dbfiles = dbfiles.size();
+    i.n_cpfiles = cpfiles.size();
+    i.size = std::reduce(dbfsize.begin(), dbfsize.end(), 0, plus<>());
+    return i;
 }
